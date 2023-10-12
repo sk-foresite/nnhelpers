@@ -239,13 +239,16 @@ class Request implements SingletonInterface {
 	 * ```
 	 * \nn\t3::Request()->GET( 'https://...', ['a'=>'123'] );
 	 * \nn\t3::Request()->GET( 'https://...', ['a'=>'123'], ['Accept-Encoding'=>'gzip, deflate'] );
+	 * 
+	 * // falls 'a'=>[1,2,3] als a=1&a=2&a=3 gesendet werdne soll, statt a[]=1&a[]=2&a[]=3
+	 *  \nn\t3::Request()->GET( 'https://...', ['a'=>[1,2,3]], [], true );
 	 * ```
 	 * @param string $url
 	 * @param array $queryParams
 	 * @param array $headers
 	 * @return array
 	 */
-	public function GET( $url = '', $queryParams = [], $headers = [] ) {
+	public function GET( $url = '', $queryParams = [], $headers = [], $dontNestArrays = false ) {
 
 		// ['Accept-Encoding'=>'gzip'] --> ['Accept-Encoding: gzip']
 		array_walk( $headers, function (&$v, $k) {
@@ -253,7 +256,7 @@ class Request implements SingletonInterface {
 		});
 
 		$headers = array_values($headers);
-		$url = $this->mergeGetParams($url, $queryParams);
+		$url = $this->mergeGetParams($url, $queryParams, $dontNestArrays);
 		$ch = curl_init();
 
 		curl_setopt($ch, CURLOPT_URL, $url );
@@ -374,17 +377,34 @@ class Request implements SingletonInterface {
 	}
 
 	/**
+	 * ```
+	 * \nn\t3::Request()->mergeGetParams( 'https://...', ['a'=>[1,2,3]] )
 	 * 
+	 * // falls 'a'=>[1,2,3] als a=1&a=2&a=3 gesendet werden soll, statt a[]=1&a[]=2&a[]=3
+	 * \nn\t3::Request()->mergeGetParams( 'https://...', ['a'=>[1,2,3]], true )
+	 * ```
+	 * @param string $url
+	 * @param array $getParams
+	 * @param bool $dontNestArrays
+	 * @return string
 	 */
-	public function mergeGetParams( $url = '', $getParams = [] ) {
+	public function mergeGetParams( $url = '', $getParams = [], $dontNestArrays = false ) 
+	{
 		$parts = parse_url($url);
 		$getP = [];
 		if ($parts['query'] ?? false) {
 			parse_str($parts['query'], $getP);
 		}
+
 		ArrayUtility::mergeRecursiveWithOverrule($getP, $getParams, true, true );
 		$uP = explode('?', $url);
+
 		$params = GeneralUtility::implodeArrayForUrl('', $getP);
+
+		if ($dontNestArrays) {
+			$params = preg_replace('/\[[0-9]*\]/', '', $params);
+		}
+
 		$outurl = $uP[0] . ($params ? '?' . substr($params, 1) : '');
 		return $outurl;
 	}
