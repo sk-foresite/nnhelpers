@@ -553,7 +553,7 @@ class Db implements SingletonInterface
 		}
 
 		$data = $this->filterDataForTable( $data, $tableNameOrModel );
-		
+
 		$queryBuilder = $this->getQueryBuilder( $tableNameOrModel );
 		$queryBuilder->insert( $tableNameOrModel )
 			->values($data)->executeStatement();
