@@ -191,7 +191,8 @@ class Environment implements SingletonInterface {
 		if ($baseUrl = $GLOBALS['TSFE']->config['config']['baseURL'] ?? false) return $baseUrl;
 		$setup = \nn\t3::Settings()->getFullTyposcript();
 		if ($baseUrl = $setup['config']['baseURL'] ?? false) return $baseUrl;
-		$server = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . "://{$_SERVER['HTTP_HOST']}/";
+		$host = $_SERVER['HTTP_HOST'] ?? '';
+		$server = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . "://{$host}/";
 		return $server;
 	}
 
