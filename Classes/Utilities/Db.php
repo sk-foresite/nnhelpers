@@ -5,6 +5,7 @@ namespace Nng\Nnhelpers\Utilities;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbQueryParser;
@@ -467,6 +468,9 @@ class Db implements SingletonInterface
 	 * // UPDATES table SET title='new' WHERE uid=1 
 	 * \nn\t3::Db()->update('table', ['title'=>'new'], 1);
 	 * 
+	 * // UPDATES table SET title='new' WHERE uid IN (1,2,3) 
+	 * \nn\t3::Db()->update('table', ['title'=>'new'], ['uid'=>[1,2,3]);
+	 * 
 	 * // UPDATE table SET title='new' WHERE email='david@99grad.de' AND pid=12
 	 * \nn\t3::Db()->update('table', ['title'=>'new'], ['email'=>'david@99grad.de', 'pid'=>12, ...]);
 	 * ```
@@ -514,12 +518,19 @@ class Db implements SingletonInterface
 				$uid = ['uid' => $uid];
 			}	
 			foreach ($uid as $k=>$v) {
-				$queryBuilder->andWhere(
-					$queryBuilder->expr()->eq( $k, $queryBuilder->createNamedParameter($v))
-				);
+				if (is_array($v)) {
+					$v = $this->quote( $v );
+					$queryBuilder->andWhere(
+						$queryBuilder->expr()->in( $k, $queryBuilder->createNamedParameter($v, Connection::PARAM_STR_ARRAY) )
+					);
+				} else {
+					$queryBuilder->andWhere(
+						$queryBuilder->expr()->eq( $k, $queryBuilder->createNamedParameter($v) )
+					);
+				}
+
 			}	
 		}		
-		
 		return $queryBuilder->executeStatement();
 	}
 	
