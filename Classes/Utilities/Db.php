@@ -814,7 +814,7 @@ class Db implements SingletonInterface
 		// exec / fetchAll --> @siehe https://bit.ly/3ltPF0S
 
 		if (stripos($statement, 'select ') !== false) {
-			$result = $connection->fetchAll( $statement, $params );
+			$result = $connection->fetchAllAssociative( $statement, $params );
 		} else {
 			$result = $connection->exec( $statement, $params );
 		}
