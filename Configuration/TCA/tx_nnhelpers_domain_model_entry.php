@@ -43,9 +43,9 @@ return [
                 'special' => 'languages',
                 'items' => [
                     [
-                        'LLL:EXT:lang/locallang_general.xlf:LGL.allLanguages',
-                        -1,
-                        'flags-multiple'
+                        'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.allLanguages',
+                        'value' => -1,
+                        'iconIdentifierChecked' => 'flags-multiple'
                     ]
                 ],
                 'default' => 0,
@@ -84,8 +84,8 @@ return [
             'config' => [
                 'type' => 'check',
                 'items' => [
-                    '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                    [
+                        'label' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
                     ]
                 ],
             ],

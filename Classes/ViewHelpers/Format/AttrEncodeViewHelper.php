@@ -27,6 +27,6 @@ class AttrEncodeViewHelper extends AbstractViewHelper {
 	public static function renderStatic( array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext ) {
 		$str = $arguments['str'] ?: $renderChildrenClosure();
 		if (is_array($str)) $str = json_encode($str);
-        return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars($str ?: '', ENT_QUOTES, 'UTF-8');
 	}
 }

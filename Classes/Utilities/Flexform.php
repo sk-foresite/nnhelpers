@@ -137,7 +137,9 @@ class Flexform implements SingletonInterface {
 
 		if (!$setup) {
 			if ($config['items'] ?? false) return $config;
-			$config['items'] = [['Keine Konfiguration gefunden - Auswahl kann in '.$path.' definiert werden', '']];
+			$config['items'] = [
+				['label' => 'Keine Konfiguration gefunden - Auswahl kann in '.$path.' definiert werden', 'value'=>'']
+			];
 			return $config;
 		}
 
@@ -164,7 +166,7 @@ class Flexform implements SingletonInterface {
 
 		// Leeren Wert einfügen?
 		if ($config['config']['insertEmpty'] ?? false) {
-			$config['items'] = array_merge( $config['items'], [['', 0, '']] );
+			$config['items'] = array_merge( $config['items'], [['label'=>'', 'value'=>0]] );
 		}
 
 		// Key in Klammern zeigen?
@@ -178,15 +180,15 @@ class Flexform implements SingletonInterface {
 				$limitToAction = \nn\t3::Arrays($v['controllerAction'] ?? '')->trimExplode();
 				if ($limitToAction && $selectedAction) {
 					if (array_intersect($limitToAction, $selectedAction)) {
-						$config['items'] = array_merge( $config['items'], [[$label.$keyStr, $k, '']] );
+						$config['items'] = array_merge( $config['items'], [['label'=>$label.$keyStr, 'value'=>$k]] );
 					}
 				} else {
-					$config['items'] = array_merge( $config['items'], [[$label.$keyStr, $k, '']] );
+					$config['items'] = array_merge( $config['items'], [['label'=>$label.$keyStr, 'value'=>$k]] );
 				}
 			} else {
 				$key = $v['classes'] ?? $k;
 				$keyStr = $hideKey ? '' : " ({$key})";
-				$config['items'] = array_merge( $config['items'], [[$v.$keyStr, $k, '']] );
+				$config['items'] = array_merge( $config['items'], [['label'=>$v.$keyStr, 'value'=>$k]] );
 			}
 		}
 
