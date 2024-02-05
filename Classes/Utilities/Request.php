@@ -18,10 +18,17 @@ class Request implements SingletonInterface {
 	 *	```
 	 * 	@return array
 	 */
-	public function GP ( $varName = null ) {
+	public function GP ( $varName = null ) 
+	{
 		$gp = [];
-		ArrayUtility::mergeRecursiveWithOverrule($gp, GeneralUtility::_GET() ?: []);
-		ArrayUtility::mergeRecursiveWithOverrule($gp, GeneralUtility::_POST() ?: []);
+		if ($request = $GLOBALS['TYPO3_REQUEST']) {
+			ArrayUtility::mergeRecursiveWithOverrule($gp, $request->getQueryParams() ?: []);
+			ArrayUtility::mergeRecursiveWithOverrule($gp, $request->getParsedBody() ?: []);
+		} else {
+			ArrayUtility::mergeRecursiveWithOverrule($gp, $_GET ?: []);
+			ArrayUtility::mergeRecursiveWithOverrule($gp, $_POST ?: []);
+		}
+
 		if ($varName) {
 			$val = \nn\t3::Settings()->getFromPath( $varName, $gp );
 			return $val ?? null;

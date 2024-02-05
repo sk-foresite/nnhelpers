@@ -446,7 +446,7 @@ class Obj implements SingletonInterface {
 	 */
 	public function parseType( $paramType = '' ) {
 		
-		if (!trim($paramType)) {
+		if (!$paramType || !trim($paramType)) {
 			return ['elementType'=>'', 'type'=>'', 'simple'=>true ];
 		}
 
