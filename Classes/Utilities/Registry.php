@@ -212,7 +212,13 @@ class Registry implements SingletonInterface {
 	public function icon ( $identifier = '', $path = '' ) {
 
 		$iconRegistry = GeneralUtility::makeInstance( \TYPO3\CMS\Core\Imaging\IconRegistry::class );
+
 		$suffix = strtolower(pathinfo( $path, PATHINFO_EXTENSION ));
+		
+		if ($suffix != 'svg') {
+			$suffix = 'bitmap';
+		}
+
 		$provider = 'TYPO3\\CMS\\Core\\Imaging\\IconProvider\\' . ucfirst($suffix) . 'IconProvider';
 
 		$iconRegistry->registerIcon(
