@@ -109,7 +109,11 @@ class DocumentationHelper {
 			$folders[] = "{$path}*/*.{$options['suffix']}";
 		}
 
-		$fileList = glob('{' . join(',', $folders) . '}', GLOB_BRACE);
+		$fileList = [];
+		foreach ($folders as $folder) {
+			$files = glob($folder);			
+			$fileList = array_merge($fileList, $files);
+		}
 
 		// Durch alle php-Dateien im Verzeichnis Classes/Utilities/ gehen
 		foreach ($fileList as $path) {
