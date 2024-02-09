@@ -46,7 +46,9 @@ class FrontendUserAuthentication extends \TYPO3\CMS\Frontend\Authentication\Fron
 			return [];
 		}
 
-		if (!$startFeUserSession) return $feUser;
+		if (!$startFeUserSession) {
+			return $user;
+		}
 
 		$request = &$GLOBALS['TYPO3_REQUEST'];
 		if (!$request) $request = new \TYPO3\CMS\Core\Http\ServerRequest();
