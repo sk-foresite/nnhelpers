@@ -20,9 +20,10 @@ class File implements SingletonInterface {
    
 
 	static $TYPES = [
-		'image'		=> ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tif', 'tiff', 'heic', 'webp'],
-		'video'		=> ['mp4', 'webm', 'mov'],
-		'document'	=> ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'ai', 'indd', 'txt'],
+		'image'		=> ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tif', 'tiff', 'heic', 'webp', 'svg', 'eps', 'raw'],
+		'video'		=> ['mp4', 'webm', 'mov', 'avi'],
+		'audio'		=> ['mp3', 'aiff'],
+		'document'	=> ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'ai', 'indd', 'txt', 'zip', 'tar'],
 		'pdf'		=> ['pdf'],
 		'enc'		=> ['enc'],
 	];
@@ -454,18 +455,26 @@ class File implements SingletonInterface {
 	/**
 	 * Gibt an, ob der Dateityp verboten ist
 	 * ```
-	 * \nn\t3::File()->isForbidden('bild.jpg');		=> gibt 'false' zurück
-	 * \nn\t3::File()->isForbidden('hack.php');		=> gibt 'true' zurück
-	 * \nn\t3::File()->isForbidden('.htaccess');	=> gibt 'true' zurück
+	 * \nn\t3::File()->isForbidden('bild.jpg');					=> gibt 'false' zurück
+	 * \nn\t3::File()->isForbidden('bild.xyz', ['xyz']);		=> gibt 'false' zurück
+	 * \nn\t3::File()->isForbidden('hack.php');					=> gibt 'true' zurück
+	 * \nn\t3::File()->isForbidden('.htaccess');				=> gibt 'true' zurück
 	 * ```
+	 * @param string $filename
+	 * @param array $allowed
 	 * @return boolean
 	 */
 	// isForbidden
-	public function isForbidden ( $filename = null ) {
+	public function isForbidden ( $filename = null, $allowed = [] ) 
+	{
 		if (!$filename) return false;
 		if (substr($filename, 0, 1) == '.') return true;
-		$types = array_values(self::$TYPES);
-		$allowed = array_merge(...$types);
+
+		if (!$allowed) {
+			$types = array_values(self::$TYPES);
+			$allowed = array_merge(...$types);
+		}
+
 		$suffix = $this->suffix($filename);
 		return !in_array($suffix, $allowed );
 	}
