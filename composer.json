@@ -5,8 +5,8 @@
   "description": "A collection of extremely simplified tools and methods to significantly speed up the development and update of Typo3 extensions.",
   "authors": [],
   "require": {
-	  "php": ">=7.0",
-	  "typo3/cms-core": "^12.1"
+	  "php": ">=8.0",
+	  "typo3/cms-core": "^13.0"
   },
   "autoload": {
 	  "psr-4": {
