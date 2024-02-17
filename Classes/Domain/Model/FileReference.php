@@ -15,9 +15,9 @@ class FileReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference {
 	protected $tableLocal = 'sys_file';
 
 	/**
-	 * @var int
+	 * @var ?int
 	 */
-	protected $uidLocal;
+	protected ?int $uidLocal;
 	
 	/**
 	 * @var int
@@ -97,9 +97,9 @@ class FileReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference {
 	}
 	
 	/**
-	 * @return array
+	 * @return \TYPO3\CMS\Core\Resource\FileReference
 	 */
-	public function getOriginalResource() {
+	public function getOriginalResource(): \TYPO3\CMS\Core\Resource\FileReference {
 		return $this;
 	}
 	

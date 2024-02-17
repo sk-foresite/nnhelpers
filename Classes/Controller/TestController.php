@@ -6,7 +6,7 @@ use Nng\Nnhelpers\Domain\Repository\EntryRepository;
 
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 
 

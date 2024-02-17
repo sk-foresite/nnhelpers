@@ -10,7 +10,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 
 use Psr\Http\Message\ResponseInterface;
@@ -19,8 +19,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Utility\FrontendSimulatorUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-class ModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
-
+class ModuleController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController 
+{
 	protected ModuleTemplateFactory $moduleTemplateFactory;
     protected PageRenderer $pageRenderer;
 
