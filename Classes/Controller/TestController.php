@@ -32,7 +32,8 @@ class TestController extends \Nng\Nnhelpers\Controller\AbstractController {
 	public function initializeView () 
 	{
 		$this->pageRenderer->loadJavaScriptModule('@vendor/nnhelpers/NnhelpersBackendModule.js');
-		
+		$this->pageRenderer->loadJavaScriptModule('@vendor/nnhelpers/NnhelpersBackendTestModule.js');
+
 		$this->pageRenderer->addCssFile('EXT:nnhelpers/Resources/Public/Vendor/fontawesome/css/all.css');
 		$this->pageRenderer->addCssFile('EXT:nnhelpers/Resources/Public/Vendor/bootstrap/bootstrap.min.css');
 		$this->pageRenderer->addCssFile('EXT:nnhelpers/Resources/Public/Vendor/prism/prism.css');

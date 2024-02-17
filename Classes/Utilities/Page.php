@@ -529,7 +529,6 @@ class Page implements SingletonInterface
 	 * \nn\t3::Page()->addFooter( 'fileadmin/style.css' );
 	 * \nn\t3::Page()->addFooter( ['fileadmin/style.css', 'js/script.js'] );
 	 * \nn\t3::Page()->addFooter( 'js/script.js' );
-	 * \nn\t3::Page()->addFooter( '<script>....</script>' );
 	 * ```
 	 * @return void
 	 */

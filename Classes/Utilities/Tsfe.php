@@ -189,7 +189,8 @@ class Tsfe implements SingletonInterface {
 				$pageArguments,
 				$feUserAuth
 			);
-			$controller->determineId( $request );
+			
+			//$controller->determineId( $request );
 			
 			// @todo: Prüfen, ob weitere Initialisierung erforderlich sind.
 			// Guter Startpunkt: EXT:redirects/Classes/Service/RedirectService-->bootFrontendController() 

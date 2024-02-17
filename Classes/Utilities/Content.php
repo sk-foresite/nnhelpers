@@ -290,7 +290,9 @@ class Content implements SingletonInterface {
 		$cObj = \nn\t3::Tsfe()->cObj();
 		$request = $GLOBALS['TYPO3_REQUEST'] ?? new \TYPO3\CMS\Core\Http\ServerRequest();
 
-		$recordsContentObject = GeneralUtility::makeInstance( RecordsContentObject::class );
+	
+		$timeTracker = new \TYPO3\CMS\Core\TimeTracker\TimeTracker;
+		$recordsContentObject = new RecordsContentObject( $timeTracker );
 		$recordsContentObject->setRequest( $request );
 		$recordsContentObject->setContentObjectRenderer( $cObj );
 
