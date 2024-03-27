@@ -26,7 +26,11 @@ class Mail implements SingletonInterface {
 	 *		'plaintext'		=> Optional: Text-Version
 	 *		'fromEmail'		=> Absender-Email
 	 *		'fromName'		=> Absender-Name
-	 *		'toEmail'		=> Empfänger-Email
+	 *		'toEmail'		=> Empfänger-Email(s)
+	 *		'ccToEmail'		=> CC Empfänger-Email(s)
+	 *		'bccToEmail'	=> BCC Empfänger-Email(s)
+	 *		'replyToEmail'	=> Antwort an Empfänger-Email
+	 *		'replyToName'	=> Antwort an Name
 	 *		'subject'		=> Betreff
 	 *		'attachments'	=> [...],
 	 *		'emogrify'		=> CSS-Stile in Inline-Styles umwandeln (default: `true`)
@@ -55,7 +59,21 @@ class Mail implements SingletonInterface {
 
 		$recipients = \nn\t3::Arrays($params['toEmail'] ?? '')->trimExplode();
 		$fromEmail = array_shift(\nn\t3::Arrays($params['fromEmail'] ?? '')->trimExplode());
-		
+
+		if ($replyToEmail = $params['replyToEmail'] ?? false) {
+			$mail->replyTo( new \Symfony\Component\Mime\Address($replyToEmail, $params['replyToName'] ?? '') );
+		}
+
+		if ($ccToEmail = $params['ccToEmail'] ?? false) {
+			$ccToEmail = \nn\t3::Arrays($ccToEmail)->trimExplode();
+			$mail->setCc( $ccToEmail );
+		}
+
+		if ($bccToEmail = $params['bccToEmail'] ?? false) {
+			$bccToEmail = \nn\t3::Arrays($bccToEmail)->trimExplode();
+			$mail->setBcc( $bccToEmail );
+		}
+
 		$mail->from( new \Symfony\Component\Mime\Address($fromEmail, $params['fromName'] ?? '') );
 		$mail->to(...$recipients);		
 		$mail->subject($params['subject'] ?? '');
