@@ -89,7 +89,7 @@ class Settings extends \Nng\Nnhelpers\Singleton {
 	public function getSettings( $extensionName = '', $path = '' ) {
 		$pluginSettings = $this->getPlugin( $extensionName );
 		if (!$pluginSettings) return [];
-		if (!$path) return $pluginSettings['settings'] ?: [];
+		if (!$path) return $pluginSettings['settings'] ?? [];
 		return $this->getFromPath( 'settings.'.$path, $pluginSettings ?? [] );
 	}
 
