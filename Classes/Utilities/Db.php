@@ -180,16 +180,23 @@ class Db implements SingletonInterface
 	 * 
 	 * // SELECT * FROM fe_users WHERE firstname = 'david' OR username = 'john'
 	 * \nn\t3::Db()->findOneByValues('fe_users', ['firstname'=>'david', 'username'=>'john'], true);
+	 * 
+	 * // SELECT uid, name FROM fe_users WHERE firstname = 'david' OR username = 'john'
+	 * \nn\t3::Db()->findOneByValues('fe_users', ['firstname'=>'david', 'username'=>'john'], true, false, ['uid', 'name']);
 	 * ```
 	 * @param string $table
 	 * @param array $whereArr
 	 * @param boolean $useLogicalOr
 	 * @param boolean $ignoreEnableFields
+	 * @param array $fieldsToGet
 	 * @return array
 	 */
-	public function findOneByValues( $table = null, $whereArr = [], $useLogicalOr = false, $ignoreEnableFields = false ) 
+	public function findOneByValues( $table = null, $whereArr = [], $useLogicalOr = false, $ignoreEnableFields = false, $fieldsToGet = [] ) 
 	{
-		$result = $this->findByValues( $table, $whereArr, $useLogicalOr, $ignoreEnableFields );
+		$additionalQueryParams = [
+			'limit' => 1
+		]; 
+		$result = $this->findByValues( $table, $whereArr, $useLogicalOr, $ignoreEnableFields, $fieldsToGet, $additionalQueryParams );
 		return $result ? array_shift($result) : []; 
 	}
 
@@ -205,15 +212,22 @@ class Db implements SingletonInterface
 	 * 
 	 * // SELECT uid, username FROM fe_users WHERE name = 'test'
 	 * \nn\t3::Db()->findByValues('fe_users', ['name'=>'test'], false, false, ['uid', 'username']);
+	 * 
+	 * // SELECT * FROM fe_users WHERE name = 'test' LIMIT 1
+	 * \nn\t3::Db()->findByValues('fe_users', ['name'=>'test'], false, false, false, ['limit'=>1]);
+	 * 
+	 * // SELECT * FROM fe_users WHERE name = 'test' LIMIT 2 OFFSET 3
+	 * \nn\t3::Db()->findByValues('fe_users', ['name'=>'test'], false, false, false, ['limit'=>2, 'offset'=>3]);
 	 * ```
 	 * @param string $table
 	 * @param array $whereArr
 	 * @param boolean $useLogicalOr
 	 * @param boolean $ignoreEnableFields
-	 * @param array $fieldsToGet
+	 * @param array|boolean $fieldsToGet
+	 * @param array $additionalQueryParams
 	 * @return array
 	 */
-	public function findByValues( $table = null, $where = [], $useLogicalOr = false, $ignoreEnableFields = false, $fieldsToGet = [] ) 
+	public function findByValues( $table = null, $where = [], $useLogicalOr = false, $ignoreEnableFields = false, $fieldsToGet = [], $additionalQueryParams = [] ) 
 	{	
 		// Nur Felder behalten, die auch in Tabelle (TCA) existieren
 		$whereArr = $this->filterDataForTable( $where, $table );
@@ -233,6 +247,16 @@ class Db implements SingletonInterface
 		// Alle Einschränkungen z.B. hidden oder starttime / endtime entfernen?
 		if ($ignoreEnableFields) {
 			$queryBuilder->getRestrictions()->removeAll();
+		}
+
+		// set LIMIT?
+		if ($limit = $additionalQueryParams['limit'] ?? false) {
+			$queryBuilder->setMaxResults( $limit );
+		}
+		
+		// set LIMIT OFFSET?
+		if ($offset = $additionalQueryParams['offset'] ?? false) {
+			$queryBuilder->setFirstResult( $offset );
 		}
 
 		if ($whereArr) {
