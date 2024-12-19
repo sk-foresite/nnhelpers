@@ -1,6 +1,8 @@
 <?php
 namespace Nng\Nnhelpers\ViewHelpers;
 
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -27,7 +29,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
  */
 class FlashMessagesViewHelper extends AbstractViewHelper {
 
-	use CompileWithRenderStatic;
 
 	protected $escapeOutput = false;
 
@@ -38,10 +39,19 @@ class FlashMessagesViewHelper extends AbstractViewHelper {
         $this->registerArgument('as', 'string', 'The name of the current flashMessage variable for rendering inside');
     }
 
-	public static function renderStatic( array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext ) {
-		$arguments['queueIdentifier'] = $arguments['id'];
-		$html = \TYPO3\CMS\Fluid\ViewHelpers\FlashMessagesViewHelper::renderStatic( $arguments, $renderChildrenClosure, $renderingContext );
-		return html_entity_decode( $html );
-	}
-    
+    public function render(): string
+    {
+        /** @var \TYPO3\CMS\Fluid\ViewHelpers\FlashMessagesViewHelper $flashMessagesViewHelper */
+        $flashMessagesViewHelper = GeneralUtility::makeInstance(
+            \TYPO3\CMS\Fluid\ViewHelpers\FlashMessagesViewHelper::class
+        );
+        $flashMessagesViewHelper->setArguments($this->arguments);
+        $flashMessagesViewHelper->setRenderingContext($this->renderingContext);
+        $flashMessagesViewHelper->initializeArguments();
+        $flashMessagesViewHelper->setChildNodes($this->childNodes);
+
+        $html = $flashMessagesViewHelper->render();
+        return html_entity_decode( $html );
+    }
+
 }
