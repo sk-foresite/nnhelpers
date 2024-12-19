@@ -21,9 +21,8 @@ class PageTitleProvider extends AbstractPageTitleProvider {
 	}
 
 	public function getTitle(): string {
-		$title = $this->title 
-			?: $GLOBALS['TSFE']->page['seo_title'] 
-			?: $GLOBALS['TSFE']->page['title'] 
+		$title = $this->title
+			?: $GLOBALS['TSFE']->page['title']
 			?: $GLOBALS['TSFE']->altPageTitle;
 		
 		$rootLine = \nn\t3::Page()->getRootline();

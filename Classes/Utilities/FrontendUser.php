@@ -2,6 +2,7 @@
 
 namespace Nng\Nnhelpers\Utilities;
 
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Context\Context;
@@ -88,7 +89,7 @@ class FrontendUser implements SingletonInterface
 		if (!$this->isLoggedIn()) return [];
 
 		// Wenn wir ein Frontend haben, sind die fe_user-Daten global und vollständig im TSFE gespeichert
-		if (\nn\t3::t3Version() < 9 || (($GLOBALS['TSFE'] ?? false) && $GLOBALS['TSFE']->fe_user)) {
+		if (\nn\t3::t3Version() < 9 || (($GLOBALS['TSFE'] ?? false) && ($GLOBALS['TSFE']->fe_user ?? null))) {
 			return $GLOBALS['TSFE']->fe_user->user ?? [];
 		}
 
@@ -96,6 +97,11 @@ class FrontendUser implements SingletonInterface
 		$context = GeneralUtility::makeInstance(Context::class);
 		$userAspect = $context->getAspect('frontend.user');
 		if (!$userAspect) return [];
+
+        /** @var ?ServerRequest $request */
+        if ($request = ($GLOBALS['TYPO3_REQUEST'] ?? null)) {
+            return $request->getAttribute('frontend.user')->user;
+        }
 
 		$usergroupUids = array_column($this->resolveUserGroups( $userAspect->get('groupIds') ), 'uid');
 
