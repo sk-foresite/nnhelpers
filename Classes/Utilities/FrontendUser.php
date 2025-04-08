@@ -37,8 +37,10 @@ class FrontendUser implements SingletonInterface
 	public function getSession() 
 	{
 		if ($session = $this->userSession) return $session;
-		if (isset($GLOBALS['TSFE']) && ($user = $GLOBALS['TSFE']->fe_user)) {
-			return $user->getSession();
+		$request = &$GLOBALS['TYPO3_REQUEST'];
+		$frontendUser = $request->getAttribute('frontend.user');
+		if ($frontendUser) {
+			return $frontendUser->getSession();
 		}
 		$userSessionManager = UserSessionManager::create('FE');
 		$session = $userSessionManager->createFromRequestOrAnonymous($GLOBALS['TYPO3_REQUEST'], $this->getCookieName());
@@ -89,8 +91,11 @@ class FrontendUser implements SingletonInterface
 		if (!$this->isLoggedIn()) return [];
 
 		// Wenn wir ein Frontend haben, sind die fe_user-Daten global und vollständig im TSFE gespeichert
-		if (\nn\t3::t3Version() < 9 || (($GLOBALS['TSFE'] ?? false) && ($GLOBALS['TSFE']->fe_user ?? null))) {
-			return $GLOBALS['TSFE']->fe_user->user ?? [];
+		$request = &$GLOBALS['TYPO3_REQUEST'];
+		$frontendUser = $request->getAttribute('frontend.user');
+
+		if ($frontendUser) {
+			return $frontendUser->user ?? [];
 		}
 
 		// Ohne Frontend könnten wir uns z.B. in einer Middleware befinden. Nach AUTH sind die Daten evtl im Aspect.
@@ -145,10 +150,13 @@ class FrontendUser implements SingletonInterface
 	public function getCurrentUserGroups( $returnRowData = false ) {
 		if (!$this->isLoggedIn()) return [];
 
-		if (($GLOBALS['TSFE'] ?? false) && $GLOBALS['TSFE']->fe_user) {
+		$request = &$GLOBALS['TYPO3_REQUEST'];
+		$frontendUser = $request->getAttribute('frontend.user');
+
+		if ($frontendUser) {
 
 			// Wenn wir ein Frontend haben...
-			$rawGroupData = $GLOBALS['TSFE']->fe_user->groupData;
+			$rawGroupData = $frontendUser->groupData;
 			$groupDataByUid = [];
 			foreach ($rawGroupData['uid'] as $i=>$uid) {
 				$groupDataByUid[$uid] = [];
@@ -262,7 +270,9 @@ class FrontendUser implements SingletonInterface
 		}
 
 		// Context `frontend.user.isLoggedIn` scheint in Middleware nicht zu gehen. Fallback auf TSFE. 
-		$loginUserFromTsfe = (isset($GLOBALS['TSFE']) && isset($GLOBALS['TSFE']->fe_user) && isset($GLOBALS['TSFE']->fe_user->user['uid']));
+		$request = &$GLOBALS['TYPO3_REQUEST'];
+		$frontendUser = $request->getAttribute('frontend.user');
+		$loginUserFromTsfe = isset($frontendUser) && isset($frontendUser->user['uid']);
 
 		$context = GeneralUtility::makeInstance(Context::class);
 		return $context->getPropertyFromAspect('frontend.user', 'isLoggedIn') || $loginUserFromTsfe;
@@ -352,11 +362,12 @@ class FrontendUser implements SingletonInterface
 		if (!$this->isLoggedIn()) return false;
 		
 		// In der MiddleWare ist der FE-User evtl. noch nicht initialisiert...
-		if ($TSFE = \nn\t3::Tsfe()->get()) {
-			if ($TSFE->fe_user && $TSFE->fe_user->logoff) {
-				$TSFE->fe_user->logoff();
-			}	
-		}
+		$request = &$GLOBALS['TYPO3_REQUEST'];
+		$frontendUser = $request->getAttribute('frontend.user');
+		if ($frontendUser && $frontendUser->logoff) {
+			$frontendUser->logoff();
+		}	
+
 
 		// Session-Daten aus Tabelle `fe_sessions` löschen
 		if ($sessionManager = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Session\SessionManager::class)) {
@@ -520,7 +531,9 @@ class FrontendUser implements SingletonInterface
 			$sessionData = $val;
 		}
 		$session->set( $key, $sessionData );
-		$GLOBALS['TSFE']->fe_user->storeSessionData();
+		$request = &$GLOBALS['TYPO3_REQUEST'];
+		$frontendUser = $request->getAttribute('frontend.user');
+		$frontendUser->storeSessionData();
 		return $sessionData;
 	}
 

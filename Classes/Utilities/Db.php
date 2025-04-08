@@ -935,14 +935,19 @@ class Db implements SingletonInterface
 
 		// Keine cols ermittelt, weil nicht  im TCA registriert – oder Abfrage erzwungen
 		if (!$cols || $useSchemaManager) {
-			$cols = GeneralUtility::makeInstance(ConnectionPool::class)
+			$columns = GeneralUtility::makeInstance(ConnectionPool::class)
 				->getConnectionForTable($table)
-				->getSchemaManager()
-				->listTableColumns($table);
+				->getSchemaInformation()
+				->introspectTable($table)
+				->getColumns();
+			$cols = [];
+			foreach($columns as $column) {
+				$cols[$column->getName()] = $column->getName();
+			}
 		}
 
 		foreach ($cols as $k=>$v) {
-			$cols[GeneralUtility::underscoredToLowerCamelCase($k)] = $v;
+			$cols[GeneralUtility::underscoredToLowerCamelCase((string)$k)] = $v;
 		}
 
 		return $cols;

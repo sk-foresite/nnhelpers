@@ -250,23 +250,25 @@ class FrontendUserAuthentication extends \TYPO3\CMS\Frontend\Authentication\Fron
 			return $user_db;
 		}
 
-		$userSession = $GLOBALS['TSFE']->fe_user->createUserSession($user_db);
+		$request = &$GLOBALS['TYPO3_REQUEST'];
+		$frontendUser = $request->getAttribute('frontend.user');
+		$userSession = $frontendUser->createUserSession($user_db);
+
 
 		$userSessionManager = \TYPO3\CMS\Core\Session\UserSessionManager::create('FE');
 		$fixatedUserSession = $userSessionManager->elevateToFixatedUserSession( $userSession, $user_db['uid'], true );
 		$sessionId = $fixatedUserSession->getIdentifier();
 		\nn\t3::FrontendUser()->setCookie( $sessionId );
 		
-		$GLOBALS['TSFE']->fe_user->user = $user_db;
-		//$GLOBALS['TSFE']->fe_user->setKey('ses', $cookieName, $user_db);
-		$GLOBALS['TSFE']->fe_user->fetchGroupData( $GLOBALS['TYPO3_REQUEST'] ?? null );
+		$frontendUser->user = $user_db;
+		$frontendUser->fetchGroupData( $GLOBALS['TYPO3_REQUEST'] ?? null );
 
 		$context = GeneralUtility::makeInstance(Context::class);
 		$alternativeGroups = [];
-		$userAspect = GeneralUtility::makeInstance(UserAspect::class, $GLOBALS['TSFE']->fe_user, $alternativeGroups);
+		$userAspect = GeneralUtility::makeInstance(UserAspect::class, $frontendUser, $alternativeGroups);
 		$context->setAspect('frontend.user', $userAspect);
 
-		return $GLOBALS['TSFE']->fe_user->user;
+		return $frontendUser->user;
 	}
 	
 	/**

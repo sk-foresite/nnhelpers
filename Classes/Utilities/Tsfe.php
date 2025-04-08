@@ -219,7 +219,9 @@ class Tsfe implements SingletonInterface {
 			
 			$userSessionManager = \TYPO3\CMS\Core\Session\UserSessionManager::create('FE');
 			$userSession = $userSessionManager->createAnonymousSession();
-			$GLOBALS['TSFE']->fe_user = $userSession;
+			$request = &$GLOBALS['TYPO3_REQUEST'];
+			$frontendUser = $request->getAttribute('frontend.user');
+			$frontendUser = $userSession;
 			
 			$GLOBALS['TSFE']->register['SYS_LASTCHANGED'] = 0;
 
